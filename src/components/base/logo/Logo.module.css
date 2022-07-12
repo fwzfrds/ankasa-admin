@@ -1,0 +1,18 @@
+.logo_brand {
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    /* gap: 10px; */
+}
+
+/* .logo_brand svg {
+    width: 100px;
+} */
+
+.logo_brand h3 {
+    font-weight: 600;
+    font-size: 20px;
+    color: #FFF;
+    margin: 0;
+}
