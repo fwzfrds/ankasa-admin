@@ -22,3 +22,8 @@
     height: 100%;
     object-fit: contain;
 }
+
+.card_actions {
+    display: flex;
+    gap: 10px;
+}
