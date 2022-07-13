@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form'
 import axios from 'axios'
 import swal from 'sweetalert'
 
+
 const AddTicket = () => {
 
     const [ticketData, setTicketData] = useState('')
@@ -22,7 +23,7 @@ const AddTicket = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        
+
         swal({
             title: "Add Ticket",
             text: `Add New Ticket Success`,
