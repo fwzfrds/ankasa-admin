@@ -1,0 +1,33 @@
+.input_container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.input_container label {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    color: #696F79;
+}
+
+.input_container input {
+    height: 35px;
+    width: 100%;
+    padding-left: 15px;
+    border: 1px solid #8692A6;
+    border-radius: 6px;
+}
+
+.input_container input:focus {
+    outline: 2px solid #2395FF;
+    border: none;
+}
+
+.input_container input::placeholder {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #8692A6;
+}

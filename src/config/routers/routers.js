@@ -4,6 +4,8 @@ import AddAirline from '../../components/module/addAirline'
 import AddTicket from '../../components/module/addTicket'
 import AirlinesList from '../../components/module/airlinesList'
 import TicketList from '../../components/module/ticketList'
+import SignIn from '../../pages/auth/signin'
+import SignUp from '../../pages/auth/signup'
 import Dashboard from '../../pages/dashboard'
 import Page404 from '../../pages/notFound/Page404'
 
@@ -18,11 +20,8 @@ const Routers = () => {
           <Route path="/airlines-list" element={<AirlinesList />} />
           <Route path="/add-airline" element={<AddAirline />} />
         </Route>
-        {/* <Route path="/productlist" element={<ProductList/>} />
-        <Route path="/home" element={<Home/>}/>
-        <Route path="/product" element={<Product/>}/>
-        <Route path="/product/:id" element={<DetailProduct/>}/>
-        <Route path="/register" element={<Register/>}/> */}
+        <Route path="/auth/sign-up" element={<SignUp />} />
+        <Route path="/auth/sign-in" element={<SignIn />} />
         <Route path="*" element={<Page404 />} />
       </Routes>
     </BrowserRouter>

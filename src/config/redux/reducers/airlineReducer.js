@@ -84,3 +84,37 @@ export const airlinesReducer = (state = initialState, action) => {
     }
 
 }
+
+const activeArilineState = {
+    activeAirlines: {},
+    isLoading: false,
+    isError: false
+}
+
+export const activeAirlinesReducer = (state = activeArilineState, action) => {
+
+    switch (action.type) {
+        case 'GET_AIRLINES_PENDING':
+            return {
+                ...state,
+                isLoading: true
+            }
+        case 'GET_AIRLINES_SUCCESS':
+            return {
+                ...state,
+                activeAirlines: action.payload,
+                isLoading: false
+            }
+        case 'GET_AIRLINES_ERROR':
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
+
+
+        default:
+            return state
+    }
+
+}

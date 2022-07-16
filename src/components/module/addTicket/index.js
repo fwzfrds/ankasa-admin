@@ -1,14 +1,31 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import styles from './AddTicket.module.css'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import axios from 'axios'
-import swal from 'sweetalert'
+// import axios from 'axios'
+// import swal from 'sweetalert'
+import CountryData from '../../../helper/CountryCodes.json'
+import CountryStateCity from '../../../helper/countryStatetCity.json'
+import { useDispatch, useSelector } from 'react-redux'
+import { getActiveAirlines } from '../../../config/redux/actions/airlineAction'
+import { addTicket } from '../../../config/redux/actions/ticketAction'
 
 
 const AddTicket = () => {
 
+    const dispatch = useDispatch()
+    const { activeAirlines: airlines } = useSelector((state) => state.activeAirlines)
     const [ticketData, setTicketData] = useState('')
+    const [originCities, setOriginCities] = useState('')
+    const [destinationCities, setDestinationCities] = useState('')
+
+    const fetchAirlines = useCallback(async () => {
+        dispatch(getActiveAirlines())
+    }, [dispatch])
+
+    useEffect(() => {
+        fetchAirlines()
+    }, [fetchAirlines])
 
     const handleInput = (e) => {
         e.persist()
@@ -16,22 +33,43 @@ const AddTicket = () => {
         if (e.target.name === 'price' || e.target.name === 'stock') {
             const value = parseInt(e.target.value)
             setTicketData({ ...ticketData, [e.target.name]: value })
+        } else if (e.target.name === 'airline') {
+            const value = (e.target.value).split('_')
+            setTicketData({ ...ticketData, airline: value[0], airline_id: value[1] })
         } else {
             setTicketData({ ...ticketData, [e.target.name]: e.target.value })
         }
     }
 
+    const handleOriginCountry = (e) => {
+        setTicketData({ ...ticketData, [e.target.name]: e.target.value })
+        const value = (e.target.value).split('-')
+        let cityList = CountryStateCity.filter(city => city.country === value[0]).map(city => city.name).sort()
+        setOriginCities(cityList)
+    }
+
+    const handleDestinationCountry = (e) => {
+        setTicketData({ ...ticketData, [e.target.name]: e.target.value })
+        const value = (e.target.value).split('-')
+        let cityList = CountryStateCity.filter(city => city.country === value[0]).map(city => city.name).sort()
+        setDestinationCities(cityList)
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        swal({
-            title: "Add Ticket",
-            text: `Add New Ticket Success`,
-            icon: "success",
-        })
+        console.log(ticketData)
+        dispatch(addTicket(ticketData))
+
+        // swal({
+        //     title: "Add Ticket",
+        //     text: `Add New Ticket Success`,
+        //     icon: "success",
+        // })
     }
 
     console.log(ticketData)
+    // console.log(destinationCities)
 
     return (
         <div className={`${styles.add_ticket}`}>
@@ -39,15 +77,92 @@ const AddTicket = () => {
             <Form className={`${styles.add_forms}`} id='ticket-form'
                 onSubmit={handleSubmit}
             >
-                <Form.Group className="mb-3" controlId="origin">
-                    <Form.Label>Origin</Form.Label>
-                    <Form.Control type="text" name='origin' placeholder="ex: Jakarta" onChange={handleInput} />
-                </Form.Group>
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="">Airline</label>
+                    <select name="airline" id="airline" defaultValue={`Select Airline`}
+                        onChange={handleInput}
+                    >
+                        <option>Select Airline</option>
+                        {airlines.map((airline, idx) => {
+                            return (
+                                <option key={idx} value={`${airline.airlinename}_${airline.airlineid}`}>{airline.airlinename}</option>
+                            )
+                        })}
+                        {/* <option value="air asia">Air Asia</option> */}
+                    </select>
+                </div>
 
-                <Form.Group className="mb-3" controlId="destination">
-                    <Form.Label>Destination</Form.Label>
-                    <Form.Control type="text" name='destination' placeholder="ex: Bali" onChange={handleInput} />
-                </Form.Group>
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="">Class</label>
+                    <select name="class" id="class" defaultValue={`Select Class`}
+                        onChange={handleInput}
+                    >
+                        <option>Select Class</option>
+                        <option value="1">Economy</option>
+                        <option value="2">Business</option>
+                        <option value="3">First Class</option>
+                    </select>
+                </div>
+
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="country_origin">Origin Country</label>
+                    <select name="country_origin" id="country_origin"
+                        onChange={handleOriginCountry} defaultValue={`Select Country`}
+                    >
+                        <option>Select Country</option>
+                        {CountryData.map((country, idx) => {
+                            return (
+                                <option key={idx} value={`${country.name}-(${country.code})`}>{country.name} ({country.code})</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
+
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="origin">Origin City</label>
+                    <select name="origin" id="origin"
+                        onChange={handleInput} defaultValue={`Select City`}
+                    >
+                        <option>Select City</option>
+                        {originCities && originCities.map((city, idx) => {
+                            return (
+                                <option key={idx} value={city}>{city}</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
+
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="country_destination">Destination Country</label>
+                    <select name="country_destination" id="country_destination"
+                        onChange={handleDestinationCountry} defaultValue={`Select Country`}
+                    >
+                        <option>Select Country</option>
+                        {CountryData.map((country, idx) => {
+                            return (
+                                <option key={idx} value={`${country.name}-(${country.code})`}>{country.name} ({country.code})</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
+
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="destination">Destination City</label>
+                    <select name="destination" id="destination"
+                        onChange={handleInput} defaultValue={`Select City`}
+                    >
+                        <option>Select Country</option>
+                        {destinationCities && destinationCities.map((city, idx) => {
+                            return (
+                                <option key={idx} value={city}>{city}</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
 
                 <Form.Group className="mb-3" controlId="departure">
                     <Form.Label>Departure</Form.Label>
@@ -59,13 +174,23 @@ const AddTicket = () => {
                     <Form.Control type="time" name='arrive' placeholder="Arrived" onChange={handleInput} />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="transit">
-                    <Form.Label>Transit</Form.Label>
-                    <Form.Control type="text" name='transit' placeholder="ex: direct" onChange={handleInput} />
-                </Form.Group>
+                <div className={`${styles.select_airline}`}>
+                    <label htmlFor="transit">Transit</label>
+                    <select name="transit" id="transit"
+                        onChange={handleInput} defaultValue={`Select Transit`}
+                    >
+                        <option>Select Transit</option>
+                        {['direct','transit','transit 2+'].map((transit, idx) => {
+                            return (
+                                <option key={idx} value={transit}>{transit}</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
 
                 <Form.Group className="mb-3" controlId="price">
-                    <Form.Label>Price</Form.Label>
+                    <Form.Label>Price ($)</Form.Label>
                     <Form.Control type="number" name='price' placeholder="ex: 15000" onChange={handleInput} />
                 </Form.Group>
 

@@ -22,6 +22,27 @@ export const getAirlines = () => async (dispatch) => {
     }
 }
 
+export const getActiveAirlines = () => async (dispatch) => {
+    try {
+
+        dispatch({ type: 'GET_AIRLINES_PENDING' })
+        const result = await axios.get(`${process.env.REACT_APP_API_BACKEND}/airlines/1`)
+        console.log(result.data)
+        const activeAirlines = result.data.data
+
+        dispatch({ type: 'GET_AIRLINES_SUCCESS', payload: activeAirlines })
+
+    } catch (error) {
+        console.log(error)
+        dispatch({ type: 'GET_AIRLINES_ERROR' })
+        swal({
+            title: "Get Airlines Error!",
+            text: `${error.response.data.message}`,
+            icon: "error",
+        })
+    }
+}
+
 export const addAirline = (formData) => async (dispatch) => {
     try {
         dispatch({ type: 'ADD_AIRLINE_PENDING' })
@@ -43,7 +64,7 @@ export const addAirline = (formData) => async (dispatch) => {
         console.log(error.response.data.message);
         dispatch({ type: 'ADD_AIRLINE_ERROR' })
         swal({
-            title: "Add Product Error!",
+            title: "Add Airline Error!",
             text: `${error.response.data.message}`,
             icon: "error",
         });

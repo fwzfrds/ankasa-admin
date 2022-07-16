@@ -171,11 +171,9 @@ const AirlinesList = () => {
                 })
             }
         })
-
-
     }
 
-    console.log(airlineUpdate)
+    // console.log(airlineUpdate)
 
     return (
         <div className={`${styles.airline_list}`}>
