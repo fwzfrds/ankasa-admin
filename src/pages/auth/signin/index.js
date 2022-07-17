@@ -25,6 +25,9 @@ const SignIn = () => {
     const handleInputLogin = (e) => {
         e.persist()
         setLoginData({ ...loginData, [e.target.name]: e.target.value })
+        if(isLoginError) {
+            setIsLoginError('')
+        }
     }
 
     const handleLogin = (e) => {
@@ -34,24 +37,27 @@ const SignIn = () => {
     }
 
     useEffect(() => {
-        if (Object.keys(formErrors).length === 0 && isSubmit) {
-            // login logic here
-            try {
-                setButtonDisable(true)
 
-                dispatch(loginUser(loginData, navigate))
-            } catch (error) {
-                console.log(error)
-                setIsLoginError('Login Error')
+        const reqLogin = async () => {
+            setButtonDisable(true)
+
+            dispatch(loginUser(loginData, navigate)).then(() => {
                 setButtonDisable(false)
-            }
-
-            setButtonDisable(false)
+                setIsSubmit(false)
+            }).catch(error => {
+                setButtonDisable(false)
+                setIsSubmit(false)
+                setIsLoginError(`${error.response.data.message}`)
+            })
         }
-    }, [formErrors, isSubmit, loginData, navigate, dispatch])
 
-    console.log(loginData)
-    console.log(formErrors)
+        if (isSubmit) {
+
+            if (Object.keys(formErrors).length === 0 && isSubmit) {
+                reqLogin()
+            }
+        }
+    }, [formErrors, isSubmit, dispatch, loginData, navigate])
 
     return (
         <div className={`${styles.sign_in}`}>
@@ -92,6 +98,7 @@ const SignIn = () => {
                             placeholder={'youremail@gmail.com'}
                             type={'text'}
                             name={'email'}
+                            id={'email'}
                             onChange={handleInputLogin}
                         >
                             {formErrors.email &&
@@ -111,6 +118,7 @@ const SignIn = () => {
                             placeholder={'Your secure password'}
                             type={'password'}
                             name={'password'}
+                            id={'password'}
                             onChange={handleInputLogin}
                         >
                             {formErrors.password &&
