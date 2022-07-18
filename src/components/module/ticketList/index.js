@@ -45,7 +45,7 @@ const TicketList = () => {
   const [isUpdate, setIsUpdate] = useState(false)
 
   const fetch = async () => {
-    const result = await axios.get(`https://ankasa-backend-api.herokuapp.com/ticket`)
+    const result = await axios.get(`https://ankasa-backend-api.herokuapp.com/ticket?limit=6`)
     setTickets(result.data)
   }
 
@@ -221,7 +221,7 @@ const TicketList = () => {
                   <p>Origin : <span>{selectedTicket.origin}</span></p>
                   <p>Country : <span>{selectedTicket.country_origin}</span></p>
                   <p>Destination : <span>{selectedTicket.destination}</span></p>
-                  <p>Country : <span>{selectedTicket.country_destination}</span></p>
+                  <p>Dest Country : <span>{selectedTicket.country_destination}</span></p>
                   <p>Departure : <span>{selectedTicket.departure}</span></p>
                   <p>Arrived : <span>{selectedTicket.arrive}</span></p>
                   <p>Transit : <span>{selectedTicket.transit}</span></p>

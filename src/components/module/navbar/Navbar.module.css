@@ -2,3 +2,9 @@
     position: sticky;
     top: 0px;
 }
+
+.logout_btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}

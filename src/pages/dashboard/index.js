@@ -30,6 +30,13 @@ function Dashboard() {
                                 <Link to={'/add-ticket'}>+ add ticket</Link>
                             </Accordion.Body>
                         </Accordion.Item>
+                        <Accordion.Item eventKey="2" className={`${styles.accordion_item}`}>
+                            <Accordion.Header className={`${styles.accordion_header}`}>User</Accordion.Header>
+                            <Accordion.Body className={`${styles.accordion_body}`}>
+                                <Link to={'/ticket-list'}>list</Link>
+                                <Link to={'/add-ticket'}>+ add ticket</Link>
+                            </Accordion.Body>
+                        </Accordion.Item>
                     </Accordion>
                 </div>
                 <div className={`${styles.data}`}>

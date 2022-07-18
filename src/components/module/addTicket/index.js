@@ -2,22 +2,25 @@ import React, { useEffect, useState, useCallback } from 'react'
 import styles from './AddTicket.module.css'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-// import axios from 'axios'
+import axios from 'axios'
 // import swal from 'sweetalert'
 import CountryData from '../../../helper/CountryCodes.json'
 import CountryStateCity from '../../../helper/countryStatetCity.json'
 import { useDispatch, useSelector } from 'react-redux'
 import { getActiveAirlines } from '../../../config/redux/actions/airlineAction'
 import { addTicket } from '../../../config/redux/actions/ticketAction'
+import { useNavigate } from 'react-router-dom'
 
 
 const AddTicket = () => {
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { activeAirlines: airlines } = useSelector((state) => state.activeAirlines)
     const [ticketData, setTicketData] = useState('')
     const [originCities, setOriginCities] = useState('')
     const [destinationCities, setDestinationCities] = useState('')
+    const [airports, setAirports] = useState('')
 
     const fetchAirlines = useCallback(async () => {
         dispatch(getActiveAirlines())
@@ -28,7 +31,7 @@ const AddTicket = () => {
     }, [fetchAirlines])
 
     const handleInput = (e) => {
-        e.persist()
+        // e.persist()
 
         if (e.target.name === 'price' || e.target.name === 'stock') {
             const value = parseInt(e.target.value)
@@ -59,17 +62,37 @@ const AddTicket = () => {
         e.preventDefault()
 
         console.log(ticketData)
-        dispatch(addTicket(ticketData))
+        dispatch(addTicket(ticketData)).then(() => {
+            navigate('/ticket-list')
+        })
 
-        // swal({
-        //     title: "Add Ticket",
-        //     text: `Add New Ticket Success`,
-        //     icon: "success",
-        // })
     }
 
-    console.log(ticketData)
-    // console.log(destinationCities)
+    const fetchAirport = async (city) => {
+        console.log(city)
+        try {
+            const result = await axios.get(`https://aerodatabox.p.rapidapi.com/airports/search/term`, {
+                params: { q: city, limit: '10' },
+                headers: {
+                    'X-RapidAPI-Key': 'cf4d244977mshd6f0de9223dac8ap1a888bjsn342d66fd8472',
+                    'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
+                }
+            })
+
+            console.log(result.data)
+            const airportList = result.data.items
+            setAirports(airportList)
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    useEffect(() => {
+        if (ticketData.origin) {
+            fetchAirport(ticketData.origin)
+        }
+    }, [ticketData.origin])
 
     return (
         <div className={`${styles.add_ticket}`}>
@@ -135,6 +158,31 @@ const AddTicket = () => {
                 </div>
 
                 <div className={`${styles.select_airline}`}>
+                    <label htmlFor="airport">Origin Airport</label>
+                    <select name="airport" id="airport"
+                        onChange={handleInput} defaultValue={`Select Airport`}
+                    >
+                        <option>Select Airport</option>
+                        {airports && airports.map((airport, idx) => {
+                            return (
+                                <option key={idx} value={airport.shortName}>{airport.shortName}</option>
+                            )
+                        })
+                        }
+                    </select>
+                </div>
+
+                <Form.Group className="mb-3" controlId="gate">
+                    <Form.Label>Gate</Form.Label>
+                    <Form.Control type="text" name='gate' placeholder="ex: A or B" onChange={handleInput} />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="terminal">
+                    <Form.Label>Terminal</Form.Label>
+                    <Form.Control type="text" name='terminal' placeholder="ex: 12 or 221" onChange={handleInput} />
+                </Form.Group>
+
+                <div className={`${styles.select_airline}`}>
                     <label htmlFor="country_destination">Destination Country</label>
                     <select name="country_destination" id="country_destination"
                         onChange={handleDestinationCountry} defaultValue={`Select Country`}
@@ -164,6 +212,11 @@ const AddTicket = () => {
                     </select>
                 </div>
 
+                <Form.Group className="mb-3" controlId="departure_date">
+                    <Form.Label>Departure Date</Form.Label>
+                    <Form.Control type="date" name='departure_date' placeholder="Departure Date" onChange={handleInput} />
+                </Form.Group>
+
                 <Form.Group className="mb-3" controlId="departure">
                     <Form.Label>Departure</Form.Label>
                     <Form.Control type="time" name='departure' placeholder="Departure" onChange={handleInput} />
@@ -180,7 +233,7 @@ const AddTicket = () => {
                         onChange={handleInput} defaultValue={`Select Transit`}
                     >
                         <option>Select Transit</option>
-                        {['direct','transit','transit 2+'].map((transit, idx) => {
+                        {['direct', 'transit', 'transit 2+'].map((transit, idx) => {
                             return (
                                 <option key={idx} value={transit}>{transit}</option>
                             )
